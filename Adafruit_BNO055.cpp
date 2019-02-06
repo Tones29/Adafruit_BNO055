@@ -605,16 +605,21 @@ void Adafruit_BNO055::setSensorOffsets(const adafruit_bno055_offsets_t &offsets_
 
 /**************************************************************************/
 /*!
-    @brief  Checks of all cal status values are set to 3 (fully calibrated)
+    @brief  Checks whether all relevant cal status values are set to 3 (fully calibrated)
 */
 /**************************************************************************/
 bool Adafruit_BNO055::isFullyCalibrated(void)
 {
     uint8_t system, gyro, accel, mag;
     getCalibration(&system, &gyro, &accel, &mag);
-    if (system < 3 || gyro < 3 || accel < 3 || mag < 3)
-        return false;
-    return true;
+    switch(_mode)
+    {
+        case OPERATION_MODE_IMUPLUS:
+            return(gyro==3 && accel==3);
+        //TODO there are more cases where not all values can become 3.
+        default:
+	    return(system==3 && gyro==3 && accel==3 && mag==3);
+     }
 }
 
 
